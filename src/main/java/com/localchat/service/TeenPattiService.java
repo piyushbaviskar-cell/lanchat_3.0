@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TeenPattiService {
     
     // In-memory state for tables
+    @SuppressWarnings("unused")
     private final ConcurrentHashMap<String, Object> tables = new ConcurrentHashMap<>();
 
     public void processAction(GameMessage msg) {

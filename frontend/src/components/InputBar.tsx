@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { SendHorizontal, Mic, Square, Camera, Satellite } from 'lucide-react';
+import { Send, Mic, Square, ImagePlus, Satellite, MapPin, ShieldCheck, AlertTriangle, TriangleAlert } from 'lucide-react';
 import { Button } from './ui/button';
 import { compressTacticalImage } from '../utils/ImageCompressor';
 import { TransportTier } from '../services/transports/STALRouter';
@@ -69,64 +69,70 @@ export default function InputBar({
   const charsRemaining = maxChars - value.length;
 
   return (
-    <div className="flex flex-col gap-1.5 w-full">
+    <div className="flex flex-col gap-2 w-full">
       {/* Quick SITREP Status Beacons */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
-        <span className="text-[10px] text-neutral-500 font-mono uppercase tracking-wider shrink-0 hidden sm:inline">SITREP:</span>
+        <span className="text-[9px] text-neutral-600 uppercase tracking-wider shrink-0 hidden sm:inline font-tactical">SITREP:</span>
+        
         <button
           type="button"
           onClick={() => onSend('📍 SITREP: [GPS LOCKED: 18.9220° N, 72.8347° E • GRID POSITION SECURE]')}
           disabled={disabled}
-          className="px-2 py-0.5 rounded-md bg-cyan-950/40 border border-cyan-800/50 text-cyan-400 hover:bg-cyan-900/60 text-[10px] font-mono shrink-0 transition-colors"
+          className="px-2 py-1 rounded-md bg-transparent border border-white/20 text-neutral-400 hover:bg-white hover:text-black hover:border-white text-[10px] shrink-0 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-tactical"
           title="Broadcast GPS Coordinates"
+          aria-label="Send GPS Ping"
         >
-          📍 GPS Ping
+          <MapPin className="w-3 h-3" /> GPS Ping
         </button>
 
         <button
           type="button"
           onClick={() => onSend('🛡️ SITREP: [STATUS GREEN • PERIMETER SECURE • 100% OPERATIONAL]')}
           disabled={disabled}
-          className="px-2 py-0.5 rounded-md bg-green-950/40 border border-green-800/50 text-green-400 hover:bg-green-900/60 text-[10px] font-mono shrink-0 transition-colors"
+          className="px-2 py-1 rounded-md bg-transparent border border-white/20 text-neutral-400 hover:bg-white hover:text-black hover:border-white text-[10px] shrink-0 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-tactical"
           title="Broadcast All Clear"
+          aria-label="Send All Clear"
         >
-          🛡️ All Clear
+          <ShieldCheck className="w-3 h-3" /> All Clear
         </button>
 
         <button
           type="button"
           onClick={() => onSend('🚨 RED ALERT: [SOS • HOSTILE ELECTRONIC INTERFERENCE DETECTED]')}
           disabled={disabled}
-          className="px-2 py-0.5 rounded-md bg-red-950/40 border border-red-800/50 text-red-400 hover:bg-red-900/60 text-[10px] font-mono shrink-0 transition-colors"
+          className="px-2 py-1 rounded-md bg-surface-muted border border-surface-outline text-foreground hover:bg-surface-outline hover:text-destructive text-[10px] shrink-0 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed red-alert-pulse flex items-center gap-1 font-tactical"
           title="Broadcast Emergency Red Alert"
+          aria-label="Send Red Alert"
         >
-          🚨 Red Alert
+          <TriangleAlert className="w-3 h-3" /> Red Alert
         </button>
 
         <button
           type="button"
           onClick={() => onSend('⚠️ SITREP: [RADIO SILENCE REQUESTED • SWITCH TO BACKUP TIER]')}
           disabled={disabled}
-          className="px-2 py-0.5 rounded-md bg-amber-950/40 border border-amber-800/50 text-amber-400 hover:bg-amber-900/60 text-[10px] font-mono shrink-0 transition-colors"
+          className="px-2 py-1 rounded-md bg-transparent border border-white/20 text-neutral-400 hover:bg-white hover:text-black hover:border-white text-[10px] shrink-0 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 font-tactical"
           title="Broadcast Caution"
+          aria-label="Send Caution"
         >
-          ⚠️ Caution
+          <AlertTriangle className="w-3 h-3" /> Caution
         </button>
       </div>
 
       {/* NavIC Space Telemetry Notice Banner */}
       {isNavicActive && (
-        <div className="flex items-center justify-between px-3 py-1 bg-cyan-950/60 border border-cyan-800/60 rounded-lg text-[10px] font-mono text-cyan-300">
+        <div className="flex items-center justify-between px-3 py-1.5 bg-cyan-950/40 border border-cyan-800/40 rounded-lg text-[10px] text-cyan-300 font-tactical">
           <span className="flex items-center gap-1.5 font-bold">
-            <Satellite className="w-3.5 h-3.5 animate-pulse" /> [🛰️ NAVIC BURST MODE — 256B PACKETS]
+            <Satellite className="w-3.5 h-3.5 animate-pulse" /> NAVIC BURST MODE — 256B PACKETS
           </span>
-          <span className={charsRemaining < 30 ? 'text-amber-400 font-bold' : 'text-neutral-400'}>
+          <span className={charsRemaining < 30 ? 'text-amber-400 font-bold' : 'text-neutral-500'}>
             {charsRemaining} Bytes Remaining
           </span>
         </div>
       )}
 
-      <div className="flex gap-2 items-center w-full">
+      {/* Main Input Row */}
+      <div className="flex gap-1.5 items-center w-full">
         {/* Hidden File Input for Tactical Image Capture */}
         <input
           type="file"
@@ -136,16 +142,17 @@ export default function InputBar({
           onChange={handleFileSelected}
         />
 
-        {/* Small Image / Camera Attachment Button */}
+        {/* Image / Camera Attachment Button */}
         {onSendImage && (
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isCompressing || isNavicActive}
-            className="h-12 w-12 rounded-xl bg-[#131929] border border-neutral-700/80 text-neutral-300 hover:text-cyan-400 hover:border-cyan-500/50 flex items-center justify-center transition-all shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="h-10 w-10 rounded-lg bg-surface-muted border border-surface-outline text-foreground hover:text-accent hover:border-surface hover:bg-surface flex items-center justify-center transition-all duration-150 shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
             title={isNavicActive ? "Images disabled on 256-byte satellite links" : "Send Compressed Tactical Image (<150KB)"}
+            aria-label="Attach image"
           >
-            <Camera className={`w-5 h-5 ${isCompressing ? 'animate-spin text-cyan-400' : ''}`} />
+            <ImagePlus className={`w-4 h-4 ${isCompressing ? 'animate-spin text-cyan-400' : ''}`} />
           </button>
         )}
 
@@ -157,14 +164,15 @@ export default function InputBar({
             onMouseUp={onPttStop}
             onTouchStart={onPttStart}
             onTouchEnd={onPttStop}
-            className={`h-12 w-12 rounded-xl border flex items-center justify-center transition-all shrink-0 ${
+            className={`h-10 w-10 rounded-lg border flex items-center justify-center transition-all duration-150 shrink-0 ${
               isRecording
-                ? 'bg-red-600 border-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]'
-                : 'bg-[#131929] border-neutral-700/80 text-neutral-300 hover:text-white hover:border-neutral-600'
+                ? 'bg-destructive border-destructive text-destructive-foreground animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.4)]'
+                : 'bg-surface-muted border-surface-outline text-foreground hover:text-accent hover:border-surface hover:bg-surface'
             }`}
             title="Push-To-Talk: Hold or tap to speak"
+            aria-label={isRecording ? "Stop recording" : "Push to talk"}
           >
-            {isRecording ? <Square className="w-5 h-5 fill-current" /> : <Mic className="w-5 h-5" />}
+            {isRecording ? <Square className="w-4 h-4 fill-current" /> : <Mic className="w-4 h-4" />}
           </button>
         )}
 
@@ -175,10 +183,10 @@ export default function InputBar({
             type="text"
             placeholder={
               isRecording 
-                ? '🔴 Recording Tactical Audio Burst...' 
+                ? 'Recording tactical audio burst...' 
                 : isNavicActive 
                 ? 'Transmit 256-byte NavIC space datagram...' 
-                : 'Transmit secure message (Enter)...'
+                : 'Transmit secure message...'
             }
             value={value}
             maxLength={maxChars}
@@ -187,11 +195,12 @@ export default function InputBar({
             onKeyDown={handleKeyDown}
             autoComplete="off"
             spellCheck={false}
-            className="w-full h-12 bg-[#131929] border border-neutral-700/80 rounded-xl px-4 text-sm font-mono text-green-400 placeholder:text-neutral-500 focus:outline-none focus:border-green-500/80 focus:ring-1 focus:ring-green-500/80 transition-all disabled:opacity-50"
+            className="w-full h-10 bg-transparent border-b border-white/20 rounded-none px-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-white transition-all duration-150 disabled:opacity-40 font-tactical"
+            aria-label="Message input"
           />
           {value.length > maxChars * 0.7 && (
-            <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-mono pointer-events-none ${
-              charsRemaining < 20 ? 'text-red-400' : 'text-neutral-500'
+            <span className={`absolute right-0 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none font-tactical ${
+              charsRemaining < 20 ? 'text-red-400' : 'text-neutral-600'
             }`}>
               {value.length}/{maxChars}
             </span>
@@ -201,13 +210,13 @@ export default function InputBar({
         {/* Dispatch Button */}
         <Button
           type="button"
-          size="icon"
-          className="h-12 w-12 rounded-xl bg-green-600 hover:bg-green-500 text-black shadow-lg transition-transform active:scale-95 shrink-0 disabled:opacity-40"
+          className="h-10 px-5 rounded-full bg-white text-black font-bold hover:bg-neutral-200 transition-all duration-150 active:scale-95 shrink-0 disabled:opacity-30 font-tactical uppercase text-xs tracking-wider"
           onClick={handleSend}
           disabled={disabled || !value.trim()}
           title="Send"
+          aria-label="Send message"
         >
-          <SendHorizontal className="w-5 h-5 font-bold" />
+          SEND <Send className="w-3.5 h-3.5 ml-2" />
         </Button>
       </div>
     </div>

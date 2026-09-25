@@ -1,6 +1,6 @@
 export function SiteFooter() {
   return (
-    <footer className="w-full bg-white dark:bg-neutral-950 border-t border-black/10 dark:border-white/10 py-8 px-4 md:px-6">
+    <footer className="w-full bg-transparent border-t border-black/10 dark:border-white/10 py-8 px-4 md:px-6">
       <div className="container mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500 dark:text-neutral-500">
         <p>© {new Date().getFullYear()} Lanchat. All rights reserved.</p>
         <div className="flex gap-6">

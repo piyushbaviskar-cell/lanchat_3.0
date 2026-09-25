@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Lock, Laptop, Smartphone, KeyRound, AlertCircle } from 'lucide-react';
+import { Shield, Lock, Laptop, Smartphone, KeyRound, AlertCircle, X } from 'lucide-react';
 import { identityService, OperatorIdentity } from '../services/IdentityService';
 import { Button } from './ui/button';
 
@@ -73,113 +73,121 @@ export const IdentityModal: React.FC<IdentityModalProps> = ({
   const isLocked = existingIdentity && allowEditMode && existingIdentity.renameQuotaRemaining <= 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-md bg-[#0e1320] border border-neutral-800 rounded-2xl shadow-2xl p-6 relative overflow-hidden"
+        className="w-full max-w-md glass-surface-modal rounded-xl overflow-hidden"
       >
         {/* Tactical Accent Top Strip */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-indigo-500 to-emerald-400" />
+        <div className="h-px bg-gradient-to-r from-emerald-500/60 via-cyan-500/40 to-emerald-400/20" />
 
-        <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-800/80">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400">
-              <Shield className="w-5 h-5" />
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 pb-4 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center text-emerald-400">
+              <Shield className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h2 className="text-sm font-black tracking-widest text-white uppercase">
-                {allowEditMode ? 'Tactical Callsign Ledger' : 'Mandatory Operator Onboarding'}
+              <h2 className="text-sm font-bold tracking-[0.1em] text-neutral-200 uppercase font-tactical">
+                {allowEditMode ? 'Tactical Callsign Ledger' : 'Operator Onboarding'}
               </h2>
-              <p className="text-[11px] font-mono text-neutral-400">ECDSA P-256 Sovereign Node Identity</p>
+              <p className="text-[10px] text-neutral-600 font-tactical mt-0.5">ECDSA P-256 Sovereign Node Identity</p>
             </div>
           </div>
           {allowEditMode && onClose && (
-            <button onClick={onClose} className="text-neutral-400 hover:text-white text-xs px-2 py-1">✕</button>
+            <button 
+              onClick={onClose} 
+              className="p-1.5 text-neutral-500 hover:text-white rounded-md hover:bg-white/5 transition-all duration-150"
+              aria-label="Close modal"
+            >
+              <X className="w-4 h-4" />
+            </button>
           )}
         </div>
 
-        {/* Device & Hardware Profile Card */}
-        <div className="grid grid-cols-2 gap-3 mb-5">
-          <div className="bg-neutral-900/80 border border-neutral-800 rounded-xl p-3 flex items-center gap-3">
-            <div className="text-indigo-400">
-              {deviceType === 'MOBILE' ? <Smartphone className="w-5 h-5" /> : <Laptop className="w-5 h-5" />}
+        <div className="p-5 space-y-4">
+          {/* Device & Hardware Profile Card */}
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="bg-white/[0.02] border border-white/[0.05] rounded-lg p-3 flex items-center gap-3">
+              <div className="text-indigo-400/80">
+                {deviceType === 'MOBILE' ? <Smartphone className="w-4.5 h-4.5" /> : <Laptop className="w-4.5 h-4.5" />}
+              </div>
+              <div>
+                <div className="text-[9px] uppercase tracking-wider text-neutral-600 font-tactical">Hardware Type</div>
+                <div className="text-xs font-semibold text-neutral-300 mt-0.5">
+                  {deviceType === 'MOBILE' ? 'Mobile Hotspot' : 'Desktop Node'}
+                </div>
+              </div>
             </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-mono">Hardware Type</div>
-              <div className="text-xs font-bold text-white flex items-center gap-1">
-                {deviceType === 'MOBILE' ? '📱 Mobile Hotspot' : '💻 Desktop Node'}
+
+            <div className="bg-white/[0.02] border border-white/[0.05] rounded-lg p-3 flex items-center gap-3">
+              <div className="text-emerald-400/80">
+                <KeyRound className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <div className="text-[9px] uppercase tracking-wider text-neutral-600 font-tactical">Device Tag</div>
+                <div className="text-xs font-semibold text-emerald-400/80 mt-0.5 font-tactical">{tagPreview}</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-neutral-900/80 border border-neutral-800 rounded-xl p-3 flex items-center gap-3">
-            <div className="text-green-400">
-              <KeyRound className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-mono">Device Tag</div>
-              <div className="text-xs font-mono font-bold text-green-400">{tagPreview}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quota Status Banner */}
-        {allowEditMode && (
-          <div className={`mb-4 p-2.5 rounded-lg border text-xs font-mono flex items-center gap-2 ${
-            isLocked 
-              ? 'bg-red-950/40 border-red-800/60 text-red-300'
-              : 'bg-indigo-950/40 border-indigo-800/60 text-indigo-300'
-          }`}>
-            <Lock className="w-4 h-4 shrink-0" />
-            <span>
-              {isLocked 
-                ? '🔒 Callsign Locked (1/1 Rename Quota Used)'
-                : '1 Lifetime Rename Quota Available (1/1)'}
-            </span>
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleRegister} className="space-y-4">
-          <div>
-            <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-300 mb-1.5">
-              Full Legal / Operational Callsign
-            </label>
-            <input
-              type="text"
-              placeholder="e.g., Kshitij Khilari"
-              value={fullName}
-              disabled={isLocked || isProcessing}
-              onChange={e => setFullName(e.target.value)}
-              autoFocus
-              className="w-full bg-[#141a29] border border-neutral-700 rounded-xl px-4 py-3 text-sm text-green-400 placeholder:text-neutral-500 font-mono focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-          </div>
-
-          {error && (
-            <div className="flex items-center gap-2 text-xs font-mono text-red-400 bg-red-950/30 border border-red-900/50 p-2.5 rounded-lg">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{error}</span>
+          {/* Quota Status Banner */}
+          {allowEditMode && (
+            <div className={`p-2.5 rounded-lg border text-xs flex items-center gap-2 font-tactical ${
+              isLocked 
+                ? 'bg-red-500/[0.06] border-red-500/15 text-red-400/80'
+                : 'bg-indigo-500/[0.06] border-indigo-500/15 text-indigo-400/80'
+            }`}>
+              <Lock className="w-3.5 h-3.5 shrink-0" />
+              <span>
+                {isLocked 
+                  ? 'Callsign Locked (1/1 Rename Quota Used)'
+                  : '1 Lifetime Rename Quota Available (1/1)'}
+              </span>
             </div>
           )}
 
-          <div className="pt-2 flex gap-2">
+          {/* Form */}
+          <form onSubmit={handleRegister} className="space-y-4">
+            <div>
+              <label className="block text-[10px] uppercase tracking-wider text-neutral-500 mb-1.5 font-tactical">
+                Full Legal / Operational Callsign
+              </label>
+              <input
+                type="text"
+                placeholder="e.g., Kshitij Khilari"
+                value={fullName}
+                disabled={isLocked || isProcessing}
+                onChange={e => setFullName(e.target.value)}
+                autoFocus
+                className="w-full bg-white/[0.03] border border-white/[0.06] rounded-lg px-4 py-3 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-emerald-400/40 focus:ring-1 focus:ring-emerald-400/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 font-tactical"
+                aria-label="Operator callsign"
+              />
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 text-xs text-red-400/80 bg-red-500/[0.06] border border-red-500/15 p-2.5 rounded-lg font-tactical">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
             <Button
               type="submit"
               disabled={isLocked || isProcessing || fullName.trim().length < 3}
-              className="w-full h-11 bg-green-600 hover:bg-green-500 text-black font-bold tracking-wide rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full h-11 bg-emerald-600 hover:bg-emerald-500 text-black font-bold tracking-wide rounded-lg transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               {isProcessing ? 'Generating Keypair...' : allowEditMode ? 'Commit Callsign Transition' : 'Initialize Defense Node'}
             </Button>
-          </div>
-        </form>
+          </form>
 
-        <div className="mt-4 text-center">
-          <span className="text-[10px] font-mono text-neutral-500 tracking-wider">
-            AIR-GAPPED COMPLIANT • ZERO EXTERNAL CLOUD TELEMETRY
-          </span>
+          <div className="text-center pt-1">
+            <span className="text-[9px] text-neutral-700 tracking-wider font-tactical">
+              AIR-GAPPED COMPLIANT • ZERO EXTERNAL CLOUD TELEMETRY
+            </span>
+          </div>
         </div>
       </motion.div>
     </div>

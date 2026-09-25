@@ -55,8 +55,25 @@ export function Message({
   const isVoice = type === 'VOICE' || !!audioData;
   const isImage = type === 'IMAGE' || (content && content.startsWith('data:image/'));
 
+  // Detect SITREP / alert messages for special styling
+  const isAlert = typeof content === 'string' && (
+    content.includes('RED ALERT') || content.includes('SOS')
+  );
+  const isCaution = typeof content === 'string' && content.includes('RADIO SILENCE');
+  const isAllClear = typeof content === 'string' && content.includes('STATUS GREEN');
+  const isGPS = typeof content === 'string' && content.includes('GPS LOCKED');
+
+  // Determine bubble border accent based on content type
+  const getBubbleBorderClass = () => {
+    if (isAlert) return 'border-destructive/40 shadow-sm shadow-destructive/10';
+    if (isCaution) return 'border-amber-500/40 shadow-sm shadow-amber-500/10';
+    if (isAllClear) return 'border-accent/40 shadow-sm shadow-accent/10';
+    if (isGPS) return 'border-accent/30 shadow-sm shadow-accent/5';
+    return isUser ? 'border-surface-outline' : 'border-surface-outline/50';
+  };
+
   return (
-    <div className={`flex w-full mb-3 group relative ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex w-full mb-2 group relative ${isUser ? 'justify-end' : 'justify-start'}`}>
       <motion.div
         drag="x"
         dragConstraints={{ left: 0, right: 80 }}
@@ -70,31 +87,33 @@ export function Message({
         {/* Message Bubble Container */}
         <div className="flex flex-col">
           {/* Sender Header */}
-          <div className={`flex items-center gap-1.5 mb-1 text-[11px] font-mono ${
-            isUser ? 'justify-end text-indigo-400' : 'justify-start text-green-400'
+          <div className={`flex items-center gap-1.5 mb-1 text-[10px] ${
+            isUser ? 'justify-end' : 'justify-start'
           }`}>
-            <span className="font-bold">{senderName || 'Operator'}</span>
-            {senderTag && <span className="text-neutral-500 font-normal">{senderTag}</span>}
+            <span className={`font-bold font-tactical ${isUser ? 'text-white' : 'text-neutral-300'}`}>
+              {senderName || 'Operator'}
+            </span>
+            {senderTag && <span className="text-neutral-600 font-tactical">{senderTag}</span>}
             {timestamp && (
-              <span className="text-[10px] text-neutral-500 ml-1">
+              <span className="text-neutral-700 font-tactical">
                 {new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             )}
           </div>
 
           {/* Main Bubble */}
-          <div className={`p-3.5 rounded-2xl border text-sm font-sans shadow-md relative ${
+          <div className={`p-3 rounded-2xl border text-sm shadow-sm relative ${
             isUser 
-              ? 'bg-[#151c30] border-indigo-900/60 text-indigo-100 rounded-br-sm' 
-              : 'bg-[#0f1422] border-neutral-800 text-neutral-100 rounded-bl-sm'
+              ? `bg-surface text-foreground ${getBubbleBorderClass()} rounded-br-sm` 
+              : `bg-surface-muted text-foreground ${getBubbleBorderClass()} rounded-bl-sm`
           }`}>
             {/* Quoted Reference */}
             {replyTo && (
-              <div className="mb-2 p-2 bg-black/40 border-l-2 border-indigo-500 rounded text-xs font-mono text-neutral-300">
-                <div className="text-[10px] text-indigo-400 font-bold flex items-center gap-1">
+              <div className="mb-2 p-2 bg-black/20 border-l-2 border-emerald-500/40 rounded text-xs text-neutral-400">
+                <div className="text-[10px] text-accent/70 font-bold flex items-center gap-1 font-tactical">
                   <CornerDownRight className="w-3 h-3" /> Replying to {replyTo.sender}:
                 </div>
-                <div className="truncate text-neutral-400">{replyTo.content}</div>
+                <div className="truncate text-neutral-500 mt-0.5">{replyTo.content}</div>
               </div>
             )}
 
@@ -111,35 +130,37 @@ export function Message({
               <div className="flex flex-col gap-1.5">
                 <div 
                   onClick={() => onOpenImage?.(content!)}
-                  className="relative group/img cursor-pointer overflow-hidden rounded-xl border border-neutral-700/80 bg-black/40 max-w-sm"
+                  className="relative group/img cursor-pointer overflow-hidden rounded-lg border border-white/[0.06] bg-black/20 max-w-sm"
                 >
                   <img
                     src={content}
                     alt="Tactical Asset"
-                    className="w-full max-h-72 object-cover transition-transform group-hover/img:scale-105"
+                    className="w-full max-h-72 object-cover transition-transform duration-300 group-hover/img:scale-105"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-1 text-xs font-mono text-white">
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-1.5 text-xs text-white font-tactical">
                     <Eye className="w-4 h-4" /> Expand
                   </div>
                 </div>
-                <span className="text-[10px] font-mono text-neutral-500 flex items-center gap-1">
-                  <ImageIcon className="w-3 h-3 text-cyan-400" /> TACTICAL RECON IMAGE
+                <span className="text-[9px] text-neutral-600 flex items-center gap-1 font-tactical">
+                  <ImageIcon className="w-3 h-3 text-cyan-500/50" /> TACTICAL RECON IMAGE
                 </span>
               </div>
             ) : (
-              <div className="leading-relaxed whitespace-pre-wrap break-words">{content}</div>
+              <div className="leading-relaxed whitespace-pre-wrap break-words" style={{ fontFamily: '"Geist Variable", Inter, system-ui, sans-serif' }}>
+                {content}
+              </div>
             )}
 
             {/* Loopback pending / confirmed state */}
             {isUser && (
-              <div className="flex justify-end mt-1 text-[10px] text-neutral-500">
+              <div className="flex justify-end mt-1.5 text-[9px]">
                 {pending ? (
-                  <span className="flex items-center gap-1 text-amber-500 font-mono">
-                    <Clock className="w-3 h-3 animate-spin" /> Transmitting
+                  <span className="flex items-center gap-1 text-amber-500/70 font-tactical">
+                    <Clock className="w-2.5 h-2.5 animate-spin" /> Transmitting
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1 text-green-500 font-mono">
-                    <Check className="w-3 h-3" /> Confirmed
+                  <span className="flex items-center gap-1 text-emerald-500/60 font-tactical">
+                    <Check className="w-2.5 h-2.5" /> Confirmed
                   </span>
                 )}
               </div>
@@ -148,15 +169,16 @@ export function Message({
         </div>
 
         {/* Desktop Hover Action [↩ Reply] */}
-        <div className={`opacity-0 group-hover:opacity-100 transition-opacity flex items-center mb-4 ${
-          isUser ? 'order-first mr-1' : 'ml-1'
+        <div className={`opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center mb-4 ${
+          isUser ? 'order-first mr-0.5' : 'ml-0.5'
         }`}>
           <button
             onClick={onReply}
-            className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded-lg border border-neutral-700 shadow transition-colors"
+            className="p-1.5 bg-white/[0.03] hover:bg-emerald-500/10 text-neutral-600 hover:text-emerald-300 rounded-md border border-white/[0.06] hover:border-emerald-500/25 transition-all duration-150"
             title="Reply"
+            aria-label="Reply to this message"
           >
-            <Reply className="w-3.5 h-3.5" />
+            <Reply className="w-3 h-3" />
           </button>
         </div>
       </motion.div>
@@ -167,7 +189,7 @@ export function Message({
 export function MessageAvatar({ src: _src, name }: { src?: string; name?: string }) {
   const initial = name ? name.charAt(0).toUpperCase() : 'O';
   return (
-    <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xs font-mono font-bold text-green-400 shrink-0">
+    <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-[10px] font-bold text-emerald-400/80 shrink-0 font-tactical">
       {initial}
     </div>
   );

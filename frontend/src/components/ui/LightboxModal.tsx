@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { X, Download } from 'lucide-react';
+import { X, Download, ImageIcon } from 'lucide-react';
 
 interface LightboxModalProps {
   isOpen: boolean;
@@ -25,46 +25,48 @@ export const LightboxModal: React.FC<LightboxModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-lg">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative max-w-4xl max-h-[90vh] bg-[#0c101d] border border-neutral-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        className="relative max-w-4xl max-h-[90vh] glass-surface-modal rounded-xl overflow-hidden flex flex-col"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-3 bg-neutral-900/80 border-b border-neutral-800 font-mono text-xs text-white">
-          <span className="text-green-400 font-bold tracking-wider uppercase">
-            TACTICAL RECON IMAGE PREVIEW
+        <div className="flex items-center justify-between p-3 border-b border-white/[0.06]">
+          <span className="text-[10px] text-emerald-400/70 font-bold tracking-[0.1em] uppercase flex items-center gap-1.5 font-tactical">
+            <ImageIcon className="w-3.5 h-3.5" /> TACTICAL RECON IMAGE PREVIEW
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={handleDownload}
-              className="p-1.5 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-neutral-300 hover:text-white transition-colors"
+              className="p-1.5 bg-white/[0.03] hover:bg-emerald-500/10 rounded-md text-neutral-500 hover:text-white border border-white/[0.06] hover:border-emerald-500/25 transition-all duration-150"
               title="Download Image"
+              aria-label="Download image"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-neutral-300 hover:text-white transition-colors"
+              className="p-1.5 bg-white/[0.03] hover:bg-white/[0.06] rounded-md text-neutral-500 hover:text-white border border-white/[0.06] transition-all duration-150"
+              aria-label="Close lightbox"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         {/* Image Display */}
-        <div className="flex-1 overflow-auto flex items-center justify-center p-2 bg-[#080b14]">
+        <div className="flex-1 overflow-auto flex items-center justify-center p-3 bg-black/30">
           <img
             src={imageSrc}
             alt={caption || 'Reconnaissance Asset'}
-            className="max-w-full max-h-[75vh] object-contain rounded-lg border border-neutral-800/80 shadow-lg"
+            className="max-w-full max-h-[75vh] object-contain rounded-lg border border-white/[0.04] shadow-lg"
           />
         </div>
 
         {caption && (
-          <div className="p-3 bg-neutral-900/80 border-t border-neutral-800 font-mono text-[11px] text-neutral-400">
+          <div className="p-3 border-t border-white/[0.06] text-[10px] text-neutral-600 font-tactical">
             {caption}
           </div>
         )}

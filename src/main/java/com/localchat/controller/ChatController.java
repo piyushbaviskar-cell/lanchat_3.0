@@ -84,7 +84,6 @@ public class ChatController {
     @MessageMapping("/admin.kick")
     public void handleAdminKick(@Payload String payload, SimpMessageHeaderAccessor accessor) {
         try {
-            String ip = accessor.getSessionAttributes() != null ? (String) accessor.getSessionAttributes().get("ip") : "127.0.0.1";
             // Allow localhost or local subnet host administration
             JsonParser parser = JsonParserFactory.getJsonParser();
             Map<String, Object> map = parser.parseMap(payload);

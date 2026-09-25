@@ -14,23 +14,33 @@ export const TacticalBoardModal: React.FC<TacticalBoardModalProps> = ({ isOpen, 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md p-4 md:p-6 flex flex-col items-center justify-center">
-      <div className="w-full max-w-5xl flex justify-between items-center mb-3 border-b border-neutral-800 pb-2">
-        <div className="flex items-center gap-2">
-          <PenTool className="w-5 h-5 text-green-400" />
-          <span className="text-sm font-black tracking-widest text-white uppercase">
-            Synchronized Tactical Whiteboard
-          </span>
-          <span className="ml-2 text-[10px] font-mono text-green-400 bg-green-950/50 border border-green-800/50 px-2 py-0.5 rounded">
-            Vector Sync Active (&lt;10ms)
-          </span>
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-lg p-4 md:p-6 flex flex-col items-center justify-center">
+      <div className="w-full max-w-5xl flex justify-between items-center mb-3 border-b border-emerald-500/12 pb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center">
+            <PenTool className="w-4 h-4 text-emerald-400" />
+          </div>
+          <div>
+            <span className="text-sm font-bold tracking-[0.12em] text-neutral-200 uppercase block font-tactical">
+              Synchronized Tactical Whiteboard
+            </span>
+            <span className="text-[9px] text-emerald-400/60 font-tactical">
+              Vector Sync Active (&lt;10ms)
+            </span>
+          </div>
         </div>
-        <Button variant="ghost" size="sm" onClick={onClose} className="text-neutral-400 hover:text-white">
-          <X className="w-5 h-5" />
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onClose} 
+          className="p-1.5 text-neutral-500 hover:text-white rounded-md hover:bg-white/5 transition-all duration-150"
+          aria-label="Close Tactical Board"
+        >
+          <X className="w-4.5 h-4.5" />
         </Button>
       </div>
 
-      <div className="w-full max-w-5xl flex-1 h-[75vh]">
+      <div className="w-full max-w-5xl flex-1 h-[75vh] rounded-xl overflow-hidden border border-white/[0.06]">
         <TacticalCanvas stompClient={stompClient} localId={localId} />
       </div>
     </div>

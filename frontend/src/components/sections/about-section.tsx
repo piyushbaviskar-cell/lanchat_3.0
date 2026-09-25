@@ -10,7 +10,7 @@ const highlights = [
 
 export function AboutSection() {
   return (
-    <section className="relative w-full bg-white dark:bg-neutral-950 py-20 sm:py-28 px-4 md:px-6">
+    <section className="relative w-full bg-transparent py-20 sm:py-28 px-4 md:px-6">
       <div className="container mx-auto max-w-5xl text-center">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}

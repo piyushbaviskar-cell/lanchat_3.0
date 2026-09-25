@@ -1,6 +1,5 @@
 package com.localchat.controller;
 
-import com.localchat.model.GameMessage;
 import com.localchat.service.TeenPattiService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Controller;
 public class GameController {
 
     private final SimpMessagingTemplate messagingTemplate;
+    @SuppressWarnings("unused")
     private final TeenPattiService teenPattiService;
 
     public GameController(SimpMessagingTemplate messagingTemplate, TeenPattiService teenPattiService) {
